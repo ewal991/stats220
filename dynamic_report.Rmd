@@ -13,6 +13,12 @@ knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
 
 body {
   font-family: "Bitter", serif;
+  max-width: fit-content;
+  margin: 16px auto;
+}
+
+h1, h2, h3 {
+  text-align: center;
 }
 ```
 
@@ -41,12 +47,14 @@ max_temp <- max(latest_data$estimated_temp)
 min_temp <- min(latest_data$estimated_temp)
 
 rainy_count <- sum(latest_data$was_raining == "Yes")
-rain_pct    <- round((rainy_count / total_entries) * 100, 1)
+rain_pct <- round((rainy_count / total_entries) * 100, 1)
 ```
 
 ## The data
 There have been a total of `r total_entries` observations so far.\
 Out of these observations, it was raining `r rain_pct`% of the time, with temperature estimates ranging from `r min_temp`°C to `r max_temp`°C.
+
+### When were the observations taken?
 
 ```{r}
 latest_data %>%
@@ -59,6 +67,8 @@ latest_data %>%
   )
 ```
 
+### How cloudy was it when it rained?
+
 ```{r}
 latest_data %>%
   ggplot() +
@@ -70,4 +80,3 @@ latest_data %>%
     fill  = "Was Raining?"
   )
 ```
-
