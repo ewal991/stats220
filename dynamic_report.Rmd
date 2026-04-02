@@ -1,0 +1,73 @@
+---
+title: My dynamic report
+output: html_fragment
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, error=FALSE)
+
+```
+
+```{css}
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital@0;1&display=swap');
+
+body {
+  font-family: "Bitter", serif;
+}
+```
+
+## Weather observations in Auckland
+
+This report summarises data from personal observations of the weather in Auckland.\
+The observations include time of day, if it was raining, how cloudy the sky was, and an estimated temperature (Celsius). 
+
+```{r}
+library(tidyverse)
+
+logged_data = read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vQdi_PTeRYXy86fjntETypel6XaYZlslTKppRUPK-SFfYFigQZWfIsr7YvnVt_MsohWxe13p5Zi0Qkh/pub?gid=427691419&single=true&output=csv")
+
+latest_data = logged_data %>%
+  rename(timestamp = 1,
+         time_of_day = 2,
+         was_raining = 3,
+         cloudiness = 4,
+         estimated_temp = 5)
+```
+
+```{r}
+total_entries <- length(latest_data$timestamp)
+
+max_temp <- max(latest_data$estimated_temp)
+min_temp <- min(latest_data$estimated_temp)
+
+rainy_count <- sum(latest_data$was_raining == "Yes")
+rain_pct    <- round((rainy_count / total_entries) * 100, 1)
+```
+
+## The data
+There have been a total of `r total_entries` observations so far.\
+Out of these observations, it was raining `r rain_pct`% of the time, with temperature estimates ranging from `r min_temp`°C to `r max_temp`°C.
+
+```{r}
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = time_of_day), fill = "lightgreen") +
+  labs(
+    title = "Observations by Time of Day",
+    x     = "Time of Day",
+    y     = "Amount"
+  )
+```
+
+```{r}
+latest_data %>%
+  ggplot() +
+  geom_bar(aes(x = cloudiness, fill = was_raining)) +
+  labs(
+    title = "How cloudy was it when it rained?",
+    x     = "Cloudiness",
+    y     = "Amount",
+    fill  = "Was Raining?"
+  )
+```
+
